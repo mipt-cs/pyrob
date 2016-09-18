@@ -25,6 +25,7 @@ def task(f):
         task_id = f.__name__
         print('Running task ' + task_id)
         clazz = get_task_class(task_id)
+        passed = True
         for i in range(clazz.CHECKS):
             pyrob.core.on_position_changed = None
 
@@ -37,7 +38,6 @@ def task(f):
             pyrob.viz.render_maze()
             pyrob.viz.update_robot_position(*pyrob.core.get_pos())
 
-            passed = True
             try:
                 f()
             except Exception as e:
@@ -46,6 +46,14 @@ def task(f):
 
             with pyrob.utils.allow_internal(True):
                 passed = passed and _task.check_solution()
+
+            if passed:
+                logger.debug('Test #{} passed for task {}'.format(i + 1, task_id))
+            else:
+                logger.error('Test #{} failed for task {}'.format(i+1, task_id))
+                break
+
+        return passed
 
     tasks_to_run.append(wrapper)
     return wrapper
@@ -57,7 +65,12 @@ def run_tasks(verbose=False):
 
     pyrob.viz.init()
 
+    passed = 0
     for t in tasks_to_run:
         logger.info('Starting task {}'.format(t.__name__))
-        t()
-        logger.info('Task {} finished'.format(t.__name__))
+        status = t()
+        if status:
+            passed += 1
+        logger.info('Task {} finished: {}'.format(t.__name__, ('+' if status else '-')))
+
+    logger.info('Total: {}/{}'.format(passed, len(tasks_to_run)))

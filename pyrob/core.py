@@ -32,25 +32,25 @@ def set_field_size(m, n):
     goto(0, 0)
     for i in range(n-1):
         put_wall(top=True)
-        right()
+        move_right()
 
     put_wall(top=True)
 
     for i in range(m-1):
         put_wall(right=True)
-        down()
+        move_down()
 
     put_wall(right=True)
 
     for i in range(n-1):
         put_wall(bottom=True)
-        left()
+        move_left()
 
     put_wall(bottom=True)
 
     for i in range(m-1):
         put_wall(left=True)
-        up()
+        move_up()
 
     put_wall(left=True)
 
@@ -119,6 +119,29 @@ def is_blocked(i=None, j=None, flag=None):
 
 
 @log_invocation
+@public
+def wall_is_above():
+    return is_blocked(None, None, WALL_TOP)
+
+
+@log_invocation
+@public
+def wall_is_beneath():
+    return is_blocked(None, None, WALL_BOTTOM)
+
+
+@log_invocation
+@public
+def wall_is_on_the_left():
+    return is_blocked(None, None, WALL_LEFT)
+
+
+@log_invocation
+@public
+def wall_is_on_the_right():
+    return is_blocked(None, None, WALL_RIGHT)
+
+@log_invocation
 @internal
 def goto(i=None, j=None):
     global cur_i, cur_j
@@ -180,23 +203,23 @@ def step_down():
 
 @log_invocation
 @public
-def left(n=1):
+def move_left(n=1):
     repeat(n, step_left)
 
 
 @log_invocation
 @public
-def right(n=1):
+def move_right(n=1):
     repeat(n, step_right)
 
 
 @log_invocation
 @public
-def up(n=1):
+def move_up(n=1):
     repeat(n, step_up)
 
 
 @log_invocation
 @public
-def down(n=1):
+def move_down(n=1):
     repeat(n, step_down)

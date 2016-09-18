@@ -8,6 +8,7 @@ class Task:
 
     def load_level(self):
         rob.set_field_size(10, 10)
+        rob.goto(0, 0)
 
     def check_solution(self):
-        pass
+        return rob.get_pos() == (9, 9)
