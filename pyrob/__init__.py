@@ -18,45 +18,54 @@ def get_task_class(task_id):
     return module.Task
 
 
-def task(f):
+def task(*args, **kwargs):
 
-    @functools.wraps(f)
-    def wrapper():
-        task_id = f.__name__
-        print('Running task ' + task_id)
-        clazz = get_task_class(task_id)
-        passed = True
-        for i in range(clazz.CHECKS):
-            pyrob.core.on_position_changed = None
+    def decorator(f):
 
-            _task = clazz()
-            with pyrob.utils.allow_internal(True):
-                _task.load_level()
+        @functools.wraps(f)
+        def wrapper():
+            task_id = f.__name__
+            print('Running task ' + task_id)
+            clazz = get_task_class(task_id)
+            passed = True
+            for i in range(clazz.CHECKS):
+                pyrob.core.on_position_changed = None
 
-            pyrob.core.on_position_changed = pyrob.viz.update_robot_position
+                _task = clazz()
+                with pyrob.utils.allow_internal(True):
+                    _task.load_level()
 
-            pyrob.viz.render_maze()
-            pyrob.viz.update_robot_position(*pyrob.core.get_pos())
+                pyrob.core.on_position_changed = pyrob.viz.update_robot_position(delay)
 
-            try:
-                f()
-            except Exception as e:
-                logger.error('Caught exception: {}'.format(e))
-                passed = False
+                pyrob.viz.render_maze()
+                pyrob.core.on_position_changed(*pyrob.core.get_pos())
 
-            with pyrob.utils.allow_internal(True):
-                passed = passed and _task.check_solution()
+                try:
+                    f()
+                except Exception as e:
+                    logger.error('Caught exception: {}'.format(e))
+                    passed = False
 
-            if passed:
-                logger.debug('Test #{} passed for task {}'.format(i + 1, task_id))
-            else:
-                logger.error('Test #{} failed for task {}'.format(i+1, task_id))
-                break
+                with pyrob.utils.allow_internal(True):
+                    passed = passed and _task.check_solution()
 
-        return passed
+                if passed:
+                    logger.debug('Test #{} passed for task {}'.format(i + 1, task_id))
+                else:
+                    logger.error('Test #{} failed for task {}'.format(i+1, task_id))
+                    break
 
-    tasks_to_run.append(wrapper)
-    return wrapper
+            return passed
+
+        tasks_to_run.append(wrapper)
+        return wrapper
+
+    if 'delay' in kwargs:
+        delay = kwargs['delay']
+        return decorator
+    else:
+        delay = None
+        return decorator(args[0])
 
 
 def run_tasks(verbose=False):

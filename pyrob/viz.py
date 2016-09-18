@@ -69,22 +69,24 @@ def render_maze():
     lines.append(((start_x - wall_thickness, start_y - wall_thickness), (start_x, start_y + m*cell_size + wall_thickness)))
     lines.append(((start_x + n*cell_size, start_y - wall_thickness), (start_x + n*cell_size + wall_thickness, start_y + m*cell_size + wall_thickness)))
 
-
-
     for ws, we in lines:
         canvas.create_rectangle(*ws, *we, fill='black')
 
     canvas.create_oval(0, 0, 2*robot_radius, 2*robot_radius, tags='robot')
 
 
-def update_robot_position(i, j):
-    global start_x, start_y, cell_size, robot_offset
-    x1, y1 = tuple(map(int, canvas.coords('robot')[:2]))
-    x2 = start_x + cell_size*j + robot_offset
-    y2 = start_y + cell_size*i + robot_offset
-    canvas.move('robot', x2-x1, y2-y1)
+def update_robot_position(delay):
 
-    tk.update_idletasks()
-    tk.update()
+    def callback(i, j):
+        global start_x, start_y, cell_size, robot_offset
+        x1, y1 = tuple(map(int, canvas.coords('robot')[:2]))
+        x2 = start_x + cell_size*j + robot_offset
+        y2 = start_y + cell_size*i + robot_offset
+        canvas.move('robot', x2-x1, y2-y1)
 
-    time.sleep(1)
+        tk.update_idletasks()
+        tk.update()
+
+        time.sleep(delay or 0.3)
+
+    return callback
