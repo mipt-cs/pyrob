@@ -19,10 +19,10 @@ Y_OFFSET = 50
 ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 10) // 2
 ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
 ROBOT_THICKNESS = 5
-ROBOT_COLOR = '#e6e6e6'
-ROBOT_SUCCESS_FILL_COLOR = '#96d7b7'
-ROBOT_FAILURE_FILL_COLOR = 'orange'
-ROBOT_CRASH_COLOR = '#f58e91'
+ROBOT_COLOR = '#bdbec0'
+ROBOT_SUCCESS_COLOR = '#92dcb9'
+ROBOT_FAILURE_FILL_COLOR = '#bdbec0'
+ROBOT_CRASH_COLOR = '#f68d91'
 ROBOT_ERROR_FILL_COLOR = '#000000'
 
 ON_TASK_COMPLETE_DELAY = 1
@@ -32,8 +32,8 @@ ON_TASK_FAILURE_DELAY = 10
 
 CELL_COLOR_MAP = {
     rob.CELL_EMPTY: '#ffffff',
-    rob.CELL_TO_BE_FILLED: '#d0e3f2',
-    rob.CELL_FILLED: '#6d6e72'
+    rob.CELL_TO_BE_FILLED: '#a1dcd8',
+    rob.CELL_FILLED: '#fff8d1'
 }
 
 PARKING_POINT_RADIUS = ROBOT_RADIUS // 2
@@ -168,27 +168,29 @@ def update_robot_position(delay):
     return callback
 
 
-def change_widget_fill_color(tag, color):
-    canvas.itemconfigure(tag, fill=color)
+def change_widget_fill_color(tag, fill_color, outline_color):
+    canvas.itemconfigure(tag, fill=fill_color, outline=outline_color)
 
     tk.update_idletasks()
     tk.update()
 
 
 def on_task_errored():
-    change_widget_fill_color('robot', ROBOT_ERROR_FILL_COLOR)
+    change_widget_fill_color('robot', ROBOT_ERROR_FILL_COLOR, ROBOT_ERROR_FILL_COLOR)
     time.sleep(ON_TASK_ERRORED_DELAY)
 
 
 def on_task_completed(success):
-    change_widget_fill_color('robot', ROBOT_SUCCESS_FILL_COLOR if success else ROBOT_FAILURE_FILL_COLOR)
+    color = ROBOT_SUCCESS_COLOR if success else ROBOT_FAILURE_FILL_COLOR
+    fill_color = None if success else ROBOT_FAILURE_FILL_COLOR
+    change_widget_fill_color('robot', fill_color, color)
     time.sleep(ON_TASK_COMPLETE_DELAY if success else ON_TASK_FAILURE_DELAY)
 
 
 def on_robot_crashed():
-    change_widget_fill_color('robot', ROBOT_CRASH_COLOR)
+    change_widget_fill_color('robot', ROBOT_CRASH_COLOR, ROBOT_CRASH_COLOR)
     time.sleep(ON_ROBOT_CRASHED_DELAY)
 
 
 def update_cell_color(i, j, type):
-    change_widget_fill_color('{}_{}'.format(i, j), CELL_COLOR_MAP[type])
+    change_widget_fill_color('{}_{}'.format(i, j), CELL_COLOR_MAP[type], CELL_COLOR_MAP[type])
