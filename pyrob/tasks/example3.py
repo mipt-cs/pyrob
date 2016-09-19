@@ -6,7 +6,7 @@ import pyrob.core as rob
 class Task:
     CHECKS = 1
 
-    def load_level(self):
+    def load_level(self, n):
         rob.set_field_size(10, 10)
 
         for i in range(10):

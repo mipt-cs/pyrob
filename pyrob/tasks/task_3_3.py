@@ -5,9 +5,9 @@ import random
 
 
 class Task:
-    CHECKS = 10
+    CHECKS = 4
 
-    def load_level(self):
+    def load_level(self, n):
         rob.set_field_size(10, 10)
 
         walls = [
@@ -17,9 +17,8 @@ class Task:
             ({'top': True, 'bottom': True, 'right': True}, (0, -1))
         ]
 
-        case = random.randint(0, 3)
         rob.goto(2, 2)
-        args, (di, dj) = walls[case]
+        args, (di, dj) = walls[n]
         rob.put_wall(**args)
 
         rob.set_parking_cell(2 + di, 2 + dj)

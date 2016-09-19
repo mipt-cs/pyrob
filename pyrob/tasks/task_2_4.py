@@ -7,7 +7,7 @@ from . import check_filled_cells
 class Task:
     CHECKS = 1
 
-    def load_level(self):
+    def load_level(self, n):
         rob.set_field_size(19, 39)
 
         rob.set_parking_cell(16, 0)

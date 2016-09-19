@@ -31,7 +31,7 @@ def task(*args, **kwargs):
 
                 _task = clazz()
                 with utils.allow_internal(True):
-                    _task.load_level()
+                    _task.load_level(i)
 
                 core.on_position_changed = viz.update_robot_position(delay)
                 core.on_cell_type_changed = viz.update_cell_color

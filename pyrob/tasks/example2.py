@@ -7,7 +7,7 @@ import random
 class Task:
     CHECKS = 3
 
-    def load_level(self):
+    def load_level(self, n):
         self.m = random.randint(5, 10)
         self.n = random.randint(5, 10)
 

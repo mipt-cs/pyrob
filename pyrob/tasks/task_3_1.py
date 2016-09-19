@@ -7,7 +7,7 @@ import random
 class Task:
     CHECKS = 5
 
-    def load_level(self):
+    def load_level(self, n):
         rob.set_field_size(10, 10)
 
         j = random.randint(2, 8)
