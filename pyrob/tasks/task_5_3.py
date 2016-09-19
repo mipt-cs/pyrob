@@ -10,12 +10,12 @@ class Task:
     def load_level(self):
         rob.set_field_size(10, 20)
 
-        j = random.randint(2, 8)
+        j = random.randint(2, 6)
         l = random.randint(5, 10)
         i = random.randint(2, 8)
 
         rob.goto(i, j)
-        for k in range(i, j+l+1):
+        for k in range(j, j+l+1):
             rob.put_wall(bottom=True)
             rob.move_right()
 
