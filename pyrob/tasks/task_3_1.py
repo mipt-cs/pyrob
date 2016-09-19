@@ -10,7 +10,7 @@ class Task:
     def load_level(self):
         rob.set_field_size(10, 10)
 
-        j = random.randint(2, 9)
+        j = random.randint(2, 8)
         rob.goto(2, j)
         rob.put_wall(right=True)
 
