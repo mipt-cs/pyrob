@@ -6,10 +6,15 @@ import time
 CELL_SIZE = 50
 WALL_THICKNESS = 3
 GRID_THICKNESS = 1
-ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 2) // 2
-ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
+WALL_COLOR = 'black'
+
 X_OFFSET = 20
 Y_OFFSET = 20
+
+ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 10) // 2
+ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
+ROBOT_THICKNESS = 5
+ROBOT_COLOR = 'gray'
 
 
 def init():
@@ -76,9 +81,9 @@ def render_maze():
     lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
 
     for ws, we in lines:
-        canvas.create_rectangle(*ws, we[0]+1, we[1]+1, fill='black', width=0)
+        canvas.create_rectangle(*ws, we[0]+1, we[1]+1, fill=WALL_COLOR, width=0)
 
-    canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot')
+    canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot', width=ROBOT_THICKNESS, outline=ROBOT_COLOR)
 
 
 def update_robot_position(delay):
