@@ -1,87 +1,92 @@
 #!/usr/bin/python3
 
 from tkinter import Tk, Canvas
-import math
 import time
 
-WIDTH = 800
-HEIGHT = 800
+CELL_SIZE = 50
+WALL_THICKNESS = 3
+GRID_THICKNESS = 1
+ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 2) // 2
+ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
+X_OFFSET = 20
+Y_OFFSET = 20
 
 
 def init():
 
     global tk
     tk = Tk()
-
-    global canvas
-    canvas = Canvas(tk, width=WIDTH, height=HEIGHT, bg='white')
-    canvas.pack()
+    tk.resizable(0, 0)
 
 
 def render_maze():
     import pyrob.core as rob
 
-    canvas.delete('all')
+    for w in tk.winfo_children():
+        w.destroy()
 
     m, n = rob.get_field_size()
 
-    global cell_size
-    cell_size = min((WIDTH-20) // n, (HEIGHT-20) // m)
-    wall_thickness = math.floor(cell_size * 0.1/2)
-    grid_thickness = math.ceil(wall_thickness / 5)
+    w = CELL_SIZE*n + 2*X_OFFSET
+    h = CELL_SIZE*m + 2* Y_OFFSET
 
-    global start_x, start_y
-    start_x = (WIDTH - cell_size*n) // 2
-    start_y = (HEIGHT - cell_size * m) // 2
+    sw = tk.winfo_screenwidth()
+    sh = tk.winfo_screenheight()
+    x = (sw - w) // 2
+    y = (sh - h) // 2
 
-    global robot_offset
-    robot_radius = math.floor((cell_size - 2*wall_thickness)*0.9/2)
-    robot_offset = (cell_size - 2*robot_radius) // 2
+    tk.geometry('{}x{}+{}+{}'.format(w, h, x, y))
+
+    global canvas
+    canvas = Canvas(tk, width=w, height=h)
+    canvas.pack()
 
     lines = []
     for i in range(m):
         for j in range(n):
-            x = start_x + j*cell_size
-            y = start_y + i*cell_size
+            x = X_OFFSET + j*CELL_SIZE
+            y = Y_OFFSET + i*CELL_SIZE
 
-            wt = wall_thickness if rob.is_blocked(i, j, rob.WALL_LEFT) else grid_thickness
+            if i > 9 or j > 9:
+                continue
+
+            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_LEFT) else GRID_THICKNESS
             ws = (x, y)
-            we = (x + wt - 1, y + cell_size - 1)
+            we = (x + wt - 1, y + CELL_SIZE - 1)
             lines.append((ws, we))
 
-            wt = wall_thickness if rob.is_blocked(i, j, rob.WALL_TOP) else grid_thickness
+            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_TOP) else GRID_THICKNESS
             ws = (x, y)
-            we = (x + cell_size - 1, y + wt - 1)
+            we = (x + CELL_SIZE - 1, y + wt - 1)
             lines.append((ws, we))
 
-            wt = wall_thickness if rob.is_blocked(i, j, rob.WALL_RIGHT) else grid_thickness
-            ws = (x + cell_size - wt, y)
-            we = (x + cell_size - 1, y + cell_size - 1)
+            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_RIGHT) else GRID_THICKNESS
+            ws = (x + CELL_SIZE - wt, y)
+            we = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
             lines.append((ws, we))
 
-            wt = wall_thickness if rob.is_blocked(i, j, rob.WALL_BOTTOM) else grid_thickness
-            ws = (x, y + cell_size - wt)
-            we = (x + cell_size - 1, y + cell_size - 1)
+            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_BOTTOM) else GRID_THICKNESS
+            ws = (x, y + CELL_SIZE - wt)
+            we = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
             lines.append((ws, we))
 
-    lines.append(((start_x - wall_thickness, start_y - wall_thickness), (start_x + n*cell_size + wall_thickness, start_y + wall_thickness)))
-    lines.append(((start_x - wall_thickness, start_y + m*cell_size), (start_x + n*cell_size + wall_thickness, start_y + m*cell_size + wall_thickness)))
-    lines.append(((start_x - wall_thickness, start_y - wall_thickness), (start_x, start_y + m*cell_size + wall_thickness)))
-    lines.append(((start_x + n*cell_size, start_y - wall_thickness), (start_x + n*cell_size + wall_thickness, start_y + m*cell_size + wall_thickness)))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + WALL_THICKNESS)))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
+    lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
 
     for ws, we in lines:
-        canvas.create_rectangle(*ws, *we, fill='black')
+        canvas.create_rectangle(*ws, we[0]+1, we[1]+1, fill='black', width=0)
 
-    canvas.create_oval(0, 0, 2*robot_radius, 2*robot_radius, tags='robot')
+    canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot')
 
 
 def update_robot_position(delay):
 
     def callback(i, j):
-        global start_x, start_y, cell_size, robot_offset
         x1, y1 = tuple(map(int, canvas.coords('robot')[:2]))
-        x2 = start_x + cell_size*j + robot_offset
-        y2 = start_y + cell_size*i + robot_offset
+        x2 = X_OFFSET + CELL_SIZE*j + ROBOT_OFFSET
+        y2 = Y_OFFSET + CELL_SIZE*i + ROBOT_OFFSET
         canvas.move('robot', x2-x1, y2-y1)
 
         tk.update_idletasks()
