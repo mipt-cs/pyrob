@@ -61,9 +61,6 @@ def render_maze():
             x = X_OFFSET + j*CELL_SIZE
             y = Y_OFFSET + i*CELL_SIZE
 
-            if i > 9 or j > 9:
-                continue
-
             wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_LEFT) else GRID_THICKNESS
             ws = (x, y)
             we = (x + wt - 1, y + CELL_SIZE - 1)
