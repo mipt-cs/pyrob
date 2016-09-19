@@ -15,4 +15,6 @@ def task_3_3():
     else:
         move_down()
 
-run_tasks()
+
+if __name__ == '__main__':
+    run_tasks()

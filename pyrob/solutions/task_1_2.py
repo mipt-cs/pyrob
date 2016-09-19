@@ -15,4 +15,6 @@ def task_1_2():
     move_right()
     move_right()
 
-run_tasks()
+
+if __name__ == '__main__':
+    run_tasks()

@@ -31,4 +31,5 @@ def task_2_4():
             move_down(4)
 
 
-run_tasks()
+if __name__ == '__main__':
+    run_tasks()

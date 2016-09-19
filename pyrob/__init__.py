@@ -4,9 +4,8 @@ import functools
 import importlib
 import logging
 
-import pyrob.core
-import pyrob.utils
-import pyrob.viz
+from pyrob import core
+from pyrob import utils
 
 tasks_to_run = []
 
@@ -29,17 +28,17 @@ def task(*args, **kwargs):
             clazz = get_task_class(task_id)
             passed = True
             for i in range(clazz.CHECKS):
-                pyrob.core.on_position_changed = None
+                core.on_position_changed = None
 
                 _task = clazz()
-                with pyrob.utils.allow_internal(True):
+                with utils.allow_internal(True):
                     _task.load_level()
 
-                pyrob.core.on_position_changed = pyrob.viz.update_robot_position(delay)
-                pyrob.core.on_cell_type_changed = pyrob.viz.update_cell_color
+                core.on_position_changed = viz.update_robot_position(delay)
+                core.on_cell_type_changed = viz.update_cell_color
 
-                pyrob.viz.render_maze(task_id)
-                pyrob.core.on_position_changed(*pyrob.core.get_pos())
+                viz.render_maze(task_id)
+                core.on_position_changed(*core.get_pos())
 
                 crashed = False
                 error = False
@@ -49,10 +48,10 @@ def task(*args, **kwargs):
                     logger.exception('Caught exception')
                     passed = False
                     error = True
-                    if isinstance(e, pyrob.core.RobotCrashed):
+                    if isinstance(e, core.RobotCrashed):
                         crashed = True
 
-                with pyrob.utils.allow_internal(True):
+                with utils.allow_internal(True):
                     passed = passed and _task.check_solution()
 
                 if passed:
@@ -82,11 +81,14 @@ def task(*args, **kwargs):
         return decorator(args[0])
 
 
-def run_tasks(verbose=False):
+def run_tasks(verbose=False, headless=False):
 
     logging.basicConfig(level=(logging.DEBUG if verbose else logging.INFO))
 
-    pyrob.viz.init()
+    global viz
+    viz = importlib.import_module('pyrob.dummy_viz' if headless else 'pyrob.viz')
+
+    viz.init()
 
     passed = 0
     for t in tasks_to_run:

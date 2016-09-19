@@ -18,4 +18,5 @@ def task_5_4():
         move_left()
 
 
-run_tasks()
+if __name__ == '__main__':
+    run_tasks(headless=True)

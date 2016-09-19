@@ -10,4 +10,6 @@ def task_1_1():
     move_right()
     move_down()
 
-run_tasks()
+
+if __name__ == '__main__':
+    run_tasks()
