@@ -45,7 +45,7 @@ def task(*args, **kwargs):
                 try:
                     f()
                 except Exception as e:
-                    logger.error('Caught exception: {}'.format(e))
+                    logger.exception('Caught exception')
                     passed = False
                     error = True
                     if isinstance(e, pyrob.core.RobotCrashed):
