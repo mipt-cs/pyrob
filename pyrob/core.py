@@ -280,13 +280,14 @@ def fill_cell():
 @log_invocation
 @public
 def cell_should_be_filled():
-    global field, cur_i, cur_j
 
-    assert field
-    assert 0 <= cur_i <= max_i
-    assert 0 <= cur_j <= max_j
+    return get_cell_type(cur_i, cur_j) == CELL_TO_BE_FILLED
 
-    return field[cur_i][cur_j].type == CELL_TO_BE_FILLED
+
+@log_invocation
+@public
+def cell_is_filled():
+    return get_cell_type(cur_i, cur_j) == CELL_FILLED
 
 
 @log_invocation

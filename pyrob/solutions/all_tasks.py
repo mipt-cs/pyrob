@@ -14,6 +14,11 @@ import task_5_2
 import task_5_3
 import task_5_4
 import task_5_7
+import task_8_21
+import task_8_22
+import task_8_27
+import task_8_28
+import task_8_29
 
 
 if __name__ == '__main__':
