@@ -24,7 +24,6 @@ def task(*args, **kwargs):
         @functools.wraps(f)
         def wrapper():
             task_id = f.__name__
-            print('Running task ' + task_id)
             clazz = get_task_class(task_id)
             passed = True
             for i in range(clazz.CHECKS):
