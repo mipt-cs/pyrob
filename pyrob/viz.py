@@ -6,9 +6,12 @@ import time
 import pyrob.core as rob
 
 CELL_SIZE = 40
+
 WALL_THICKNESS = 2
+WALL_COLOR = '#bfc0c2'
+
 GRID_THICKNESS = 1
-WALL_COLOR = 'black'
+GRID_COLOR = '#e6e6e6'
 
 X_OFFSET = 50
 Y_OFFSET = 50
@@ -16,11 +19,11 @@ Y_OFFSET = 50
 ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 10) // 2
 ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
 ROBOT_THICKNESS = 5
-ROBOT_COLOR = 'gray'
-ROBOT_SUCCESS_FILL_COLOR = 'green'
+ROBOT_COLOR = '#e6e6e6'
+ROBOT_SUCCESS_FILL_COLOR = '#96d7b7'
 ROBOT_FAILURE_FILL_COLOR = 'orange'
-ROBOT_CRASH_COLOR = 'red'
-ROBOT_ERROR_FILL_COLOR = 'brown'
+ROBOT_CRASH_COLOR = '#f58e91'
+ROBOT_ERROR_FILL_COLOR = '#000000'
 
 ON_TASK_COMPLETE_DELAY = 1
 ON_TASK_ERRORED_DELAY = 1
@@ -28,14 +31,16 @@ ON_ROBOT_CRASHED_DELAY = 10
 ON_TASK_FAILURE_DELAY = 10
 
 CELL_COLOR_MAP = {
-    rob.CELL_EMPTY: 'white',
-    rob.CELL_TO_BE_FILLED: 'yellow',
-    rob.CELL_FILLED: 'blue'
+    rob.CELL_EMPTY: '#ffffff',
+    rob.CELL_TO_BE_FILLED: '#d0e3f2',
+    rob.CELL_FILLED: '#6d6e72'
 }
 
-PARKING_POINT_RADIUS = ROBOT_RADIUS
-PARKING_POINT_OFFSET = ROBOT_OFFSET
-PARKING_POINT_COLOR = 'black'
+PARKING_POINT_RADIUS = ROBOT_RADIUS // 2
+PARKING_POINT_OFFSET = ROBOT_OFFSET * 2
+PARKING_POINT_COLOR = '#000000'
+
+DEFAULT_DELAY = 0.15
 
 
 def init():
@@ -83,30 +88,38 @@ def render_maze(task_id):
             if rob.is_parking_cell(i, j):
                 parking_points.append((x + PARKING_POINT_OFFSET, y + PARKING_POINT_OFFSET))
 
-            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_LEFT) else GRID_THICKNESS
+            w = rob.is_blocked(i, j, rob.WALL_LEFT)
+            wt = WALL_THICKNESS if w else GRID_THICKNESS
+            wc = WALL_COLOR if w else GRID_COLOR
             ws = (x, y)
             we = (x + wt - 1, y + CELL_SIZE - 1)
-            lines.append((ws, we))
+            lines.append((ws, we, wc))
 
-            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_TOP) else GRID_THICKNESS
+            w = rob.is_blocked(i, j, rob.WALL_TOP)
+            wt = WALL_THICKNESS if w else GRID_THICKNESS
+            wc = WALL_COLOR if w else GRID_COLOR
             ws = (x, y)
             we = (x + CELL_SIZE - 1, y + wt - 1)
-            lines.append((ws, we))
+            lines.append((ws, we, wc))
 
-            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_RIGHT) else GRID_THICKNESS
+            w = rob.is_blocked(i, j, rob.WALL_RIGHT)
+            wt = WALL_THICKNESS if w else GRID_THICKNESS
+            wc = WALL_COLOR if w else GRID_COLOR
             ws = (x + CELL_SIZE - wt, y)
             we = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
-            lines.append((ws, we))
+            lines.append((ws, we, wc))
 
-            wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_BOTTOM) else GRID_THICKNESS
+            w = rob.is_blocked(i, j, rob.WALL_BOTTOM)
+            wt = WALL_THICKNESS if w else GRID_THICKNESS
+            wc = WALL_COLOR if w else GRID_COLOR
             ws = (x, y + CELL_SIZE - wt)
             we = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
-            lines.append((ws, we))
+            lines.append((ws, we, wc))
 
-    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + WALL_THICKNESS)))
-    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
-    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
-    lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + WALL_THICKNESS), WALL_COLOR))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS), WALL_COLOR))
+    lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS), WALL_COLOR))
+    lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS), WALL_COLOR))
 
     def rect(start, end, *args, **kwargs):
         canvas.create_rectangle(*start, end[0] + 1, end[1] + 1, *args, **kwargs)
@@ -129,11 +142,12 @@ def render_maze(task_id):
         color = CELL_COLOR_MAP[rob.get_cell_type(i, j)]
         rect(cs, ce, fill=color, width=0, tags='{}_{}'.format(i, j))
 
-    for ws, we in lines:
-        rect(ws, we, fill=WALL_COLOR, width=0)
+    for ws, we, wc in lines:
+        rect(ws, we, fill=wc, width=0)
 
     for (x, y) in parking_points:
         canvas.create_oval(x, y, x + 2*PARKING_POINT_RADIUS, y + 2*PARKING_POINT_RADIUS, width=0, fill=PARKING_POINT_COLOR)
+
 
     canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot', width=ROBOT_THICKNESS, outline=ROBOT_COLOR)
 
@@ -149,7 +163,7 @@ def update_robot_position(delay):
         tk.update_idletasks()
         tk.update()
 
-        time.sleep(delay or 0.3)
+        time.sleep(delay or DEFAULT_DELAY)
 
     return callback
 
