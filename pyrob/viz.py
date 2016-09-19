@@ -21,6 +21,9 @@ ROBOT_CRASH_COLOR = 'red'
 ROBOT_ERROR_FILL_COLOR = 'brown'
 
 ON_TASK_COMPLETE_DELAY = 1
+ON_TASK_ERRORED_DELAY = 1
+ON_ROBOT_CRASHED_DELAY = 10
+ON_TASK_FAILURE_DELAY = 10
 
 
 def init():
@@ -117,14 +120,14 @@ def change_robot_fill_color(color):
 
 def on_task_errored():
     change_robot_fill_color(ROBOT_ERROR_FILL_COLOR)
-    time.sleep(ON_TASK_COMPLETE_DELAY)
+    time.sleep(ON_TASK_ERRORED_DELAY)
 
 
 def on_task_completed(success):
     change_robot_fill_color(ROBOT_SUCCESS_FILL_COLOR if success else ROBOT_FAILURE_FILL_COLOR)
-    time.sleep(ON_TASK_COMPLETE_DELAY)
+    time.sleep(ON_TASK_COMPLETE_DELAY if success else ON_TASK_FAILURE_DELAY)
 
 
 def on_robot_crashed():
     change_robot_fill_color(ROBOT_CRASH_COLOR)
-    time.sleep(ON_TASK_COMPLETE_DELAY)
+    time.sleep(ON_ROBOT_CRASHED_DELAY)
