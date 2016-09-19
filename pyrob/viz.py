@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-from tkinter import Tk, Canvas
+from tkinter import Tk, Canvas, Frame, Label
+import tkinter
 import time
 import pyrob.core as rob
 
@@ -9,8 +10,8 @@ WALL_THICKNESS = 2
 GRID_THICKNESS = 1
 WALL_COLOR = 'black'
 
-X_OFFSET = 20
-Y_OFFSET = 20
+X_OFFSET = 50
+Y_OFFSET = 50
 
 ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 10) // 2
 ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
@@ -109,6 +110,20 @@ def render_maze(task_id):
 
     def rect(start, end, *args, **kwargs):
         canvas.create_rectangle(*start, end[0] + 1, end[1] + 1, *args, **kwargs)
+
+    def make_label(x, y, text,):
+        f = Frame(canvas, height=CELL_SIZE, width=CELL_SIZE)
+        f.pack_propagate(0)
+        f.place(x=x, y=y)
+        label = Label(f, font=("Helvetica", 14), text=text)
+        label.pack(fill=tkinter.BOTH, expand=1)
+        return label
+
+    for i in range(m):
+        make_label(X_OFFSET - CELL_SIZE - WALL_THICKNESS, Y_OFFSET + CELL_SIZE*i, str(i + 1))
+
+    for j in range(n):
+        make_label(X_OFFSET + CELL_SIZE*j, Y_OFFSET-CELL_SIZE - WALL_THICKNESS, str(j + 1))
 
     for i, j, cs, ce in cells:
         color = CELL_COLOR_MAP[rob.get_cell_type(i, j)]
