@@ -44,7 +44,7 @@ def init():
     tk.resizable(0, 0)
 
 
-def render_maze():
+def render_maze(task_id):
 
     for w in tk.winfo_children():
         w.destroy()
@@ -59,6 +59,7 @@ def render_maze():
     x = (sw - w) // 2
     y = (sh - h) // 2
 
+    tk.title("pyrob :: " + task_id)
     tk.geometry('{}x{}+{}+{}'.format(w, h, x, y))
 
     global canvas
