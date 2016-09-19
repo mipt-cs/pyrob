@@ -32,6 +32,10 @@ CELL_COLOR_MAP = {
     rob.CELL_FILLED: 'blue'
 }
 
+PARKING_POINT_RADIUS = ROBOT_RADIUS
+PARKING_POINT_OFFSET = ROBOT_OFFSET
+PARKING_POINT_COLOR = 'black'
+
 
 def init():
 
@@ -63,6 +67,7 @@ def render_maze():
 
     lines = []
     cells = []
+    parking_points = []
     for i in range(m):
         for j in range(n):
 
@@ -72,6 +77,9 @@ def render_maze():
             cs = (x, y)
             ce = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
             cells.append((i, j, cs, ce))
+
+            if rob.is_parking_cell(i, j):
+                parking_points.append((x + PARKING_POINT_OFFSET, y + PARKING_POINT_OFFSET))
 
             wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_LEFT) else GRID_THICKNESS
             ws = (x, y)
@@ -107,6 +115,9 @@ def render_maze():
 
     for ws, we in lines:
         rect(ws, we, fill=WALL_COLOR, width=0)
+
+    for (x, y) in parking_points:
+        canvas.create_oval(x, y, x + 2*PARKING_POINT_RADIUS, y + 2*PARKING_POINT_RADIUS, width=0, fill=PARKING_POINT_COLOR)
 
     canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot', width=ROBOT_THICKNESS, outline=ROBOT_COLOR)
 

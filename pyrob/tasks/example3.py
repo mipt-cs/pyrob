@@ -12,10 +12,18 @@ class Task:
         for i in range(10):
             rob.set_cell_type(i, i, rob.CELL_TO_BE_FILLED)
 
+        rob.set_parking_cell(3, 3)
+        rob.set_parking_cell(9, 9)
+
+        rob.goto(2, 4)
+        for i in range(4):
+            rob.put_wall(top=True, bottom=True)
+            rob.move_right()
+
         rob.goto(0, 0)
 
     def check_solution(self):
-        if rob.get_pos() != (9, 9):
+        if not rob.is_parking_point():
             return False
 
         cell_status = {

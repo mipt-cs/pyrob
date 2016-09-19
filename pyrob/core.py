@@ -25,6 +25,7 @@ class FieldCell:
         self.j = j
         self.type = CELL_EMPTY
         self.walls_flag = 0
+        self.parking_cell = False
 
 
 class RobotCrashed(Exception):
@@ -286,3 +287,39 @@ def cell_should_be_filled():
     assert 0 <= cur_j <= max_j
 
     return field[cur_i][cur_j].type == CELL_TO_BE_FILLED
+
+
+@log_invocation
+@internal
+def set_parking_cell(i, j):
+    global field, max_i, max_j
+
+    assert field
+    assert 0 <= i <= max_i
+    assert 0 <= j <= max_j
+
+    field[i][j].parking_cell = True
+
+
+@log_invocation
+@internal
+def is_parking_cell(i, j):
+    global field, max_i, max_j
+
+    assert field
+    assert 0 <= i <= max_i
+    assert 0 <= j <= max_j
+
+    return field[i][j].parking_cell
+
+
+@log_invocation
+@public
+def is_parking_point():
+    global field, cur_i, cur_j
+
+    assert field
+    assert 0 <= cur_i <= max_i
+    assert 0 <= cur_j <= max_j
+
+    return field[cur_i][cur_j].parking_cell
