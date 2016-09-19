@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 from pyrob.api import *
 
 import task_1_1
@@ -16,4 +17,5 @@ import task_5_7
 
 
 if __name__ == '__main__':
-    run_tasks(headless=True)
+    res = run_tasks(headless=True)
+    sys.exit(0 if res else -1)

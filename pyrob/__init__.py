@@ -99,3 +99,5 @@ def run_tasks(verbose=False, headless=False):
         logger.info('Task {} finished: {}'.format(t.__name__, ('+' if status else '-')))
 
     logger.info('Total: {}/{}'.format(passed, len(tasks_to_run)))
+
+    return passed == len(tasks_to_run)
