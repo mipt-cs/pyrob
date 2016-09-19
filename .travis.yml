@@ -1,0 +1,14 @@
+sudo: false
+
+language: python
+python:
+  - "3.5"
+
+install: pip install setuptools
+
+script:
+  - pip install .
+  - python -m unittest discover -s pyrob/tests/
+  - cd ../
+  - seq 100 | xargs -Iz python pyrob/pyrob/solutions/all_tasks.py
+
