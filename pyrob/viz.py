@@ -15,6 +15,12 @@ ROBOT_RADIUS = (CELL_SIZE - 2*WALL_THICKNESS - 10) // 2
 ROBOT_OFFSET = (CELL_SIZE - 2*ROBOT_RADIUS) // 2
 ROBOT_THICKNESS = 5
 ROBOT_COLOR = 'gray'
+ROBOT_SUCCESS_FILL_COLOR = 'green'
+ROBOT_FAILURE_FILL_COLOR = 'orange'
+ROBOT_CRASH_COLOR = 'red'
+ROBOT_ERROR_FILL_COLOR = 'brown'
+
+ON_TASK_COMPLETE_DELAY = 1
 
 
 def init():
@@ -100,3 +106,25 @@ def update_robot_position(delay):
         time.sleep(delay or 0.3)
 
     return callback
+
+
+def change_robot_fill_color(color):
+    canvas.itemconfigure('robot', fill=color)
+
+    tk.update_idletasks()
+    tk.update()
+
+
+def on_task_errored():
+    change_robot_fill_color(ROBOT_ERROR_FILL_COLOR)
+    time.sleep(ON_TASK_COMPLETE_DELAY)
+
+
+def on_task_completed(success):
+    change_robot_fill_color(ROBOT_SUCCESS_FILL_COLOR if success else ROBOT_FAILURE_FILL_COLOR)
+    time.sleep(ON_TASK_COMPLETE_DELAY)
+
+
+def on_robot_crashed():
+    change_robot_fill_color(ROBOT_CRASH_COLOR)
+    time.sleep(ON_TASK_COMPLETE_DELAY)

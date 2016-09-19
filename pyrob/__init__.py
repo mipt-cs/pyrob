@@ -40,19 +40,32 @@ def task(*args, **kwargs):
                 pyrob.viz.render_maze()
                 pyrob.core.on_position_changed(*pyrob.core.get_pos())
 
+                crashed = False
+                error = False
                 try:
                     f()
                 except Exception as e:
                     logger.error('Caught exception: {}'.format(e))
                     passed = False
+                    error = True
+                    if isinstance(e, pyrob.core.RobotCrashed):
+                        crashed = True
 
                 with pyrob.utils.allow_internal(True):
                     passed = passed and _task.check_solution()
 
                 if passed:
                     logger.debug('Test #{} passed for task {}'.format(i + 1, task_id))
+                    viz.on_task_completed(True)
                 else:
                     logger.error('Test #{} failed for task {}'.format(i+1, task_id))
+                    if crashed:
+                        viz.on_robot_crashed()
+                    elif error:
+                        viz.on_task_errored()
+                    else:
+                        viz.on_task_completed(False)
+
                     break
 
             return passed
