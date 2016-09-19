@@ -314,7 +314,7 @@ def is_parking_cell(i, j):
 
 
 @log_invocation
-@public
+@internal
 def is_parking_point():
     global field, cur_i, cur_j
 
