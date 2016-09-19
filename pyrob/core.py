@@ -9,12 +9,27 @@ WALL_RIGHT = 1 << 1
 WALL_TOP = 1 << 2
 WALL_BOTTOM = 1 << 3
 
+CELL_EMPTY = 0
+CELL_TO_BE_FILLED = 1
+CELL_FILLED = 2
+
 logger = logging.getLogger(__name__)
 
 on_position_changed = None
+on_cell_type_changed = None
+
+
+class FieldCell:
+    def __init__(self, i, j):
+        self.i = i
+        self.j = j
+        self.type = CELL_EMPTY
+        self.walls_flag = 0
+
 
 class RobotCrashed(Exception):
     pass
+
 
 @log_invocation
 @internal
@@ -27,7 +42,7 @@ def set_field_size(m, n):
     max_i = m-1
     max_j = n-1
 
-    field = [[0]*n for i in range(m)]
+    field = [[FieldCell(i, j) for j in range(n)] for i in range(m)]
 
     goto(0, 0)
     for i in range(n-1):
@@ -97,10 +112,10 @@ def put_wall(left=False, right=False, top=False, bottom=False):
         walls.append((flag, nflag, ni, nj))
 
     for flag, nflag, ni, nj in walls:
-        field[cur_i][cur_j] |= flag
+        field[cur_i][cur_j].walls_flag |= flag
 
         if 0 <= ni <= max_i and 0 <= nj <= max_j:
-            field[ni][nj] |= nflag
+            field[ni][nj].walls_flag |= nflag
 
 
 @log_invocation
@@ -114,8 +129,8 @@ def is_blocked(i=None, j=None, flag=None):
 
     _i = cur_i if i is None else i
     _j = cur_j if j is None else j
-    logger.debug('Field value at ({}, {}) is {}'.format(_i, _j, field[_i][_j]))
-    return (field[_i][_j] & flag) > 0
+    logger.debug('Field value at ({}, {}) is {}'.format(_i, _j, field[_i][_j].walls_flag))
+    return (field[_i][_j].walls_flag & flag) > 0
 
 
 @log_invocation
@@ -223,3 +238,51 @@ def move_up(n=1):
 @public
 def move_down(n=1):
     repeat(n, step_down)
+
+
+@log_invocation
+@internal
+def set_cell_type(i, j, type):
+    assert 0 <= i <= max_i
+    assert 0 <= j <= max_j
+    assert type in [CELL_EMPTY, CELL_FILLED, CELL_TO_BE_FILLED]
+
+    global field
+    field[i][j].type = type
+
+
+@log_invocation
+@internal
+def get_cell_type(i, j):
+    assert 0 <= i <= max_i
+    assert 0 <= j <= max_j
+
+    global field
+    return field[i][j].type
+
+
+@log_invocation
+@public
+def fill_cell():
+    global field, cur_i, cur_j
+
+    assert field
+    assert 0 <= cur_i <= max_i
+    assert 0 <= cur_j <= max_j
+
+    field[cur_i][cur_j].type = CELL_FILLED
+
+    if on_cell_type_changed:
+        on_cell_type_changed(cur_i, cur_j, CELL_FILLED)
+
+
+@log_invocation
+@public
+def cell_should_be_filled():
+    global field, cur_i, cur_j
+
+    assert field
+    assert 0 <= cur_i <= max_i
+    assert 0 <= cur_j <= max_j
+
+    return field[cur_i][cur_j].type == CELL_TO_BE_FILLED

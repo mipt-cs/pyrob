@@ -2,6 +2,7 @@
 
 from tkinter import Tk, Canvas
 import time
+import pyrob.core as rob
 
 CELL_SIZE = 50
 WALL_THICKNESS = 3
@@ -25,6 +26,12 @@ ON_TASK_ERRORED_DELAY = 1
 ON_ROBOT_CRASHED_DELAY = 10
 ON_TASK_FAILURE_DELAY = 10
 
+CELL_COLOR_MAP = {
+    rob.CELL_EMPTY: 'white',
+    rob.CELL_TO_BE_FILLED: 'yellow',
+    rob.CELL_FILLED: 'blue'
+}
+
 
 def init():
 
@@ -34,7 +41,6 @@ def init():
 
 
 def render_maze():
-    import pyrob.core as rob
 
     for w in tk.winfo_children():
         w.destroy()
@@ -56,10 +62,16 @@ def render_maze():
     canvas.pack()
 
     lines = []
+    cells = []
     for i in range(m):
         for j in range(n):
+
             x = X_OFFSET + j*CELL_SIZE
             y = Y_OFFSET + i*CELL_SIZE
+
+            cs = (x, y)
+            ce = (x + CELL_SIZE - 1, y + CELL_SIZE - 1)
+            cells.append((i, j, cs, ce))
 
             wt = WALL_THICKNESS if rob.is_blocked(i, j, rob.WALL_LEFT) else GRID_THICKNESS
             ws = (x, y)
@@ -86,8 +98,15 @@ def render_maze():
     lines.append(((X_OFFSET - WALL_THICKNESS, Y_OFFSET - WALL_THICKNESS), (X_OFFSET, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
     lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS)))
 
+    def rect(start, end, *args, **kwargs):
+        canvas.create_rectangle(*start, end[0] + 1, end[1] + 1, *args, **kwargs)
+
+    for i, j, cs, ce in cells:
+        color = CELL_COLOR_MAP[rob.get_cell_type(i, j)]
+        rect(cs, ce, fill=color, width=0, tags='{}_{}'.format(i, j))
+
     for ws, we in lines:
-        canvas.create_rectangle(*ws, we[0]+1, we[1]+1, fill=WALL_COLOR, width=0)
+        rect(ws, we, fill=WALL_COLOR, width=0)
 
     canvas.create_oval(0, 0, 2*ROBOT_RADIUS, 2*ROBOT_RADIUS, tags='robot', width=ROBOT_THICKNESS, outline=ROBOT_COLOR)
 
@@ -108,23 +127,27 @@ def update_robot_position(delay):
     return callback
 
 
-def change_robot_fill_color(color):
-    canvas.itemconfigure('robot', fill=color)
+def change_widget_fill_color(tag, color):
+    canvas.itemconfigure(tag, fill=color)
 
     tk.update_idletasks()
     tk.update()
 
 
 def on_task_errored():
-    change_robot_fill_color(ROBOT_ERROR_FILL_COLOR)
+    change_widget_fill_color('robot', ROBOT_ERROR_FILL_COLOR)
     time.sleep(ON_TASK_ERRORED_DELAY)
 
 
 def on_task_completed(success):
-    change_robot_fill_color(ROBOT_SUCCESS_FILL_COLOR if success else ROBOT_FAILURE_FILL_COLOR)
+    change_widget_fill_color('robot', ROBOT_SUCCESS_FILL_COLOR if success else ROBOT_FAILURE_FILL_COLOR)
     time.sleep(ON_TASK_COMPLETE_DELAY if success else ON_TASK_FAILURE_DELAY)
 
 
 def on_robot_crashed():
-    change_robot_fill_color(ROBOT_CRASH_COLOR)
+    change_widget_fill_color('robot', ROBOT_CRASH_COLOR)
     time.sleep(ON_ROBOT_CRASHED_DELAY)
+
+
+def update_cell_color(i, j, type):
+    change_widget_fill_color('{}_{}'.format(i, j), CELL_COLOR_MAP[type])

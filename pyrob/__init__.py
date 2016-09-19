@@ -36,6 +36,7 @@ def task(*args, **kwargs):
                     _task.load_level()
 
                 pyrob.core.on_position_changed = pyrob.viz.update_robot_position(delay)
+                pyrob.core.on_cell_type_changed = pyrob.viz.update_cell_color
 
                 pyrob.viz.render_maze()
                 pyrob.core.on_position_changed(*pyrob.core.get_pos())
