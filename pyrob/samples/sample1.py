@@ -4,7 +4,7 @@ from pyrob.api import *
 
 
 @task
-def sample1():
+def example1():
 
     for i in range(9):
         move_right()

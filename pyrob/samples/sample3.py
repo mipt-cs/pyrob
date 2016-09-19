@@ -4,13 +4,13 @@ from pyrob.api import *
 
 
 @task
-def sample1():
+def example1():
 
     move_up()
 
 
 @task
-def sample2():
+def example2():
 
     move_down()
 
