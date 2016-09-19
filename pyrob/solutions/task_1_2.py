@@ -15,4 +15,4 @@ def task_1_2():
     move_right()
     move_right()
 
-run_tasks(verbose=True)
+run_tasks()

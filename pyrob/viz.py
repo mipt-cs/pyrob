@@ -4,8 +4,8 @@ from tkinter import Tk, Canvas
 import time
 import pyrob.core as rob
 
-CELL_SIZE = 50
-WALL_THICKNESS = 3
+CELL_SIZE = 40
+WALL_THICKNESS = 2
 GRID_THICKNESS = 1
 WALL_COLOR = 'black'
 
