@@ -75,8 +75,8 @@ def set_field_size(m, n):
 @internal
 def get_field_size():
     global max_i, max_j, field
-    assert max_i > 0
-    assert max_j > 0
+    assert max_i >= 0
+    assert max_j >= 0
 
     return max_i+1, max_j+1
 
