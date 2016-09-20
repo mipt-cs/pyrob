@@ -163,7 +163,7 @@ def update_robot_position(delay):
         tk.update_idletasks()
         tk.update()
 
-        time.sleep(delay or DEFAULT_DELAY)
+        sleep(delay or DEFAULT_DELAY)
 
     return callback
 
@@ -177,20 +177,32 @@ def change_widget_fill_color(tag, fill_color, outline_color):
 
 def on_task_errored():
     change_widget_fill_color('robot', ROBOT_ERROR_FILL_COLOR, ROBOT_ERROR_FILL_COLOR)
-    time.sleep(ON_TASK_ERRORED_DELAY)
+    sleep(ON_TASK_ERRORED_DELAY)
 
 
 def on_task_completed(success):
     color = ROBOT_SUCCESS_COLOR if success else ROBOT_FAILURE_FILL_COLOR
     fill_color = None if success else ROBOT_FAILURE_FILL_COLOR
     change_widget_fill_color('robot', fill_color, color)
-    time.sleep(ON_TASK_COMPLETE_DELAY if success else ON_TASK_FAILURE_DELAY)
+    sleep(ON_TASK_COMPLETE_DELAY if success else ON_TASK_FAILURE_DELAY)
 
 
 def on_robot_crashed():
     change_widget_fill_color('robot', ROBOT_CRASH_COLOR, ROBOT_CRASH_COLOR)
-    time.sleep(ON_ROBOT_CRASHED_DELAY)
+    sleep(ON_ROBOT_CRASHED_DELAY)
 
 
 def update_cell_color(i, j, type):
     change_widget_fill_color('{}_{}'.format(i, j), CELL_COLOR_MAP[type], CELL_COLOR_MAP[type])
+
+
+def sleep(pause):
+
+    tk.update_idletasks()
+    tk.update()
+
+    if pause <= 0.5:
+        time.sleep(pause)
+    else:
+        time.sleep(0.5)
+        sleep(pause - 0.5)
