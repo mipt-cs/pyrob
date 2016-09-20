@@ -10,7 +10,7 @@ setup(
     license='MIT',
     author='Alexey Ermakov',
     author_email='ermakov.as@mipt.ru',
-    packages=['pyrob', 'pyrob.tasks', 'pyrob.samples'],
+    packages=['pyrob', 'pyrob.tasks', 'pyrob.samples', 'pyrob.solutions'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: X11 Applications',
