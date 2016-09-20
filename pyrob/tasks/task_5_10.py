@@ -2,7 +2,7 @@
 
 import pyrob.core as rob
 import random
-from pyrob.tasks import check_filled_cells
+from pyrob.tasks import check_filled_cells, find_cells_to_be_filled
 
 
 class Task:
@@ -18,18 +18,15 @@ class Task:
 
         rob.set_field_size(m, n)
 
-        self.cells_to_fill = []
-
         for i in range(m):
             for j in range(n):
                 rob.set_cell_type(i, j, rob.CELL_TO_BE_FILLED)
-                self.cells_to_fill.append((i, j))
 
+        self.cells_to_fill = find_cells_to_be_filled()
 
         rob.set_parking_cell(m-1, 0)
 
         rob.goto(0, 0)
-
 
     def check_solution(self):
 

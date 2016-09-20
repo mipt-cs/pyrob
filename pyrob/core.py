@@ -38,6 +38,9 @@ def set_field_size(m, n):
     assert m > 0
     assert n > 0
 
+    global registers
+    registers = {}
+
     global max_i, max_j, field
 
     max_i = m-1
@@ -324,3 +327,23 @@ def is_parking_point():
     assert 0 <= cur_j <= max_j
 
     return field[cur_i][cur_j].parking_cell
+
+
+@log_invocation
+@public
+def mov(register, value):
+    global registers
+
+    assert registers is not None
+
+    registers[register] = value
+
+
+@log_invocation
+@internal
+def get_register_value(register):
+    global registers
+
+    assert registers is not None
+
+    return registers.get(register, None)

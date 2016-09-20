@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import pyrob.core as rob
-from pyrob.tasks import check_filled_cells
+from pyrob.tasks import check_filled_cells, find_cells_to_be_filled
 import random
 
 
@@ -10,8 +10,6 @@ class Task:
 
     def load_level(self, n):
         rob.set_field_size(13, 20)
-
-        self.cells_to_fill = []
 
         l = random.randint(10, 15)
 
@@ -30,7 +28,6 @@ class Task:
             for j in range(k):
                 rob.move_up()
                 pos = rob.get_pos()
-                self.cells_to_fill.append(pos)
                 rob.set_cell_type(*pos, rob.CELL_TO_BE_FILLED)
                 rob.put_wall(left=True, right=True)
 
@@ -39,6 +36,7 @@ class Task:
             for j in range(k):
                 rob.move_down()
 
+        self.cells_to_fill = find_cells_to_be_filled()
 
         rob.put_wall(right=True)
         rob.set_parking_cell(10, 1)

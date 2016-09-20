@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import pyrob.core as rob
-from pyrob.tasks import check_filled_cells
+from pyrob.tasks import check_filled_cells, find_cells_to_be_filled
 
 
 class Task:
@@ -13,13 +13,13 @@ class Task:
 
         rob.set_field_size(m, m)
 
-        self.cells_to_be_filled = []
 
         for i in range(m):
             for j in range(m):
                 if i != j and i != m-1-j:
-                    self.cells_to_be_filled.append((i, j))
                     rob.set_cell_type(i, j, rob.CELL_TO_BE_FILLED)
+
+        self.cells_to_be_filled = find_cells_to_be_filled()
 
         rob.set_parking_cell(m-1, 0)
 

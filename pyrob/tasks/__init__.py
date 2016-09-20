@@ -21,3 +21,15 @@ def check_filled_cells(expected):
                     return False
 
     return len(cells) == 0
+
+
+def find_cells_to_be_filled():
+    cells = []
+
+    m, n = rob.get_field_size()
+    for i in range(m):
+        for j in range(n):
+            if rob.get_cell_type(i, j) == rob.CELL_TO_BE_FILLED:
+                cells.append((i, j))
+
+    return cells
