@@ -21,7 +21,7 @@ class Task:
 
         rob.set_parking_cell(*rob.get_pos())
 
-        rob.goto(i, j)
+        rob.goto(i, 1)
 
 
     def check_solution(self):
