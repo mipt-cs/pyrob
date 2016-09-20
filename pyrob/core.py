@@ -278,7 +278,7 @@ def fill_cell():
 
 
 @log_invocation
-@public
+@internal
 def cell_should_be_filled():
 
     return get_cell_type(cur_i, cur_j) == CELL_TO_BE_FILLED
