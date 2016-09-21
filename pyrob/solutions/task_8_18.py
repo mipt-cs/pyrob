@@ -13,15 +13,16 @@ def task_8_18():
 
         if cell_is_filled():
             n += 1
-        elif cell_should_be_filled():
-            fill_cell()
 
-        while not wall_is_above():
-            move_up()
-            if cell_should_be_filled():
-                fill_cell()
-            elif cell_is_filled():
-                n += 1
+        if wall_is_above():
+            fill_cell()
+        else:
+            while not wall_is_above():
+                move_up()
+                if cell_is_filled():
+                    n += 1
+                else:
+                    fill_cell()
 
         while not wall_is_beneath():
             move_down()

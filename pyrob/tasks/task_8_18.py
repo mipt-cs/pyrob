@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import pyrob.core as rob
-from pyrob.tasks import check_filled_cells, find_cells_to_be_filled
+from pyrob.tasks import check_filled_cells, find_cells_to_be_filled, find_filled_cells
 import random
 
 
@@ -12,24 +12,20 @@ class Task:
         l = random.randint(20, 30)
         rob.set_field_size(13, l+1)
 
-        self.cells_to_fill = []
-
         corridors = [random.randint(0, 1) for i in range(l)]
 
         self.filled_cells_number = 0
 
         rob.goto(10, 0)
         rob.put_wall(top=True, bottom=True)
+        rob.set_cell_type(10, 0, rob.CELL_TO_BE_FILLED)
         for j in range(l-1):
             rob.move_right()
             rob.put_wall(bottom=True)
 
-            if random.randint(0, 1) == 0:
-                rob.set_cell_type(10, j, rob.CELL_TO_BE_FILLED)
-                self.cells_to_fill.append((10, j))
-
-            if not corridors[j]:
+            if not corridors[j+1]:
                 rob.put_wall(top=True)
+                rob.set_cell_type(10, j+1, rob.CELL_TO_BE_FILLED)
                 continue
 
             k = random.randint(1, 8)
@@ -39,17 +35,16 @@ class Task:
                 if random.randint(0, 1) == 0:
                     rob.fill_cell()
                     self.filled_cells_number += 1
-                    self.cells_to_fill.append(pos)
                 else:
-                    if random.randint(0, 1) == 0:
-                        rob.set_cell_type(*pos, rob.CELL_TO_BE_FILLED)
-                        self.cells_to_fill.append(pos)
+                    rob.set_cell_type(*pos, rob.CELL_TO_BE_FILLED)
                 rob.put_wall(left=True, right=True)
 
             rob.put_wall(top=True)
 
             for q in range(k):
                 rob.move_down()
+
+        self.cells_to_fill = find_cells_to_be_filled() + find_filled_cells()
 
         rob.set_parking_cell(10, l)
 

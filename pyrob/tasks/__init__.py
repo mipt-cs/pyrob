@@ -33,3 +33,15 @@ def find_cells_to_be_filled():
                 cells.append((i, j))
 
     return cells
+
+
+def find_filled_cells():
+    cells = []
+
+    m, n = rob.get_field_size()
+    for i in range(m):
+        for j in range(n):
+            if rob.get_cell_type(i, j) == rob.CELL_FILLED:
+                cells.append((i, j))
+
+    return cells
