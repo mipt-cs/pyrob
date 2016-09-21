@@ -9,6 +9,8 @@ import pyscreenshot as ImageGrab
 
 tasks = [t.__name__ for t in pyrob.tasks_to_run]
 
+pyrob.utils.allow_internal(True, False)
+
 for task_id in tasks:
 
     pyrob.core.on_position_changed = None
