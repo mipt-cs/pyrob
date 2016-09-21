@@ -2,6 +2,10 @@
 
 import sys
 import functools
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def log_invocation(f):
 
@@ -16,34 +20,43 @@ def log_invocation(f):
     return wrapper
 
 
-class AllowInternalContext:
+class AllowInternalContext():
 
-    allow_internal = False
+    _allow_internal = False
 
     @classmethod
     def internal_allowed(cls):
-        return cls.allow_internal
+        return cls._allow_internal
 
+    @classmethod
+    def allow_internal(cls, flag):
+        cls._allow_internal = flag
+
+    @log_invocation
     def __init__(self, allow):
-        self.flag = self.allow_internal
+        self.flag = AllowInternalContext._allow_internal
         self.allow = allow
 
+    @log_invocation
     def __enter__(self):
-        self.allow_internal = self.allow
+        AllowInternalContext._allow_internal = self.allow
 
+    @log_invocation
     def __exit__(self, *args):
-        self.allow_internal = self.flag
+        AllowInternalContext._allow_internal = self.flag
 
 
-def allow_internal(flag):
-    return AllowInternalContext(flag)
-
+def allow_internal(flag, ctx=True):
+    if ctx:
+        return AllowInternalContext(flag)
+    else:
+        AllowInternalContext.allow_internal(flag)
 
 def internal(f):
 
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        if AllowInternalContext.allow_internal:
+        if not AllowInternalContext.internal_allowed():
             raise NotImplementedError("API {} is marked as internal".format(f.__name__))
         return f(*args, **kwargs)
 

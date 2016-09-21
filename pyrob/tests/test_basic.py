@@ -8,7 +8,7 @@ class BasicTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        pyrob.utils.allow_internal(True)
+        pyrob.utils.allow_internal(True, False)
 
     def testSetFieldSize(self):
         for (m, n) in [(10, 10), (10, 20), (20, 10)]:

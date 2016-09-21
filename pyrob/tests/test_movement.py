@@ -8,10 +8,6 @@ from pyrob.core import RobotCrashed
 class MovementTest(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
-        pyrob.utils.allow_internal(True)
-
-    @classmethod
     def setUp(cls):
         rob.set_field_size(10, 10)
 
