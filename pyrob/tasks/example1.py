@@ -8,7 +8,8 @@ class Task:
 
     def load_level(self, n):
         rob.set_field_size(10, 10)
+        rob.set_parking_cell(9, 9)
         rob.goto(0, 0)
 
     def check_solution(self):
-        return rob.get_pos() == (9, 9)
+        return rob.is_parking_cell(*rob.get_pos())
