@@ -36,7 +36,7 @@ class Task:
                     rob.fill_cell()
                     self.filled_cells_number += 1
                 else:
-                    rob.set_cell_type(*pos, rob.CELL_TO_BE_FILLED)
+                    rob.set_cell_type(pos[0], pos[1], rob.CELL_TO_BE_FILLED)
                 rob.put_wall(left=True, right=True)
 
             rob.put_wall(top=True)

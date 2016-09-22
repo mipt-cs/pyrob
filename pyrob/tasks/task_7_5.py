@@ -20,7 +20,8 @@ class Task:
 
         while not rob.wall_is_on_the_right():
             if _d == 0:
-                rob.set_cell_type(*rob.get_pos(), rob.CELL_TO_BE_FILLED)
+                pos = rob.get_pos()
+                rob.set_cell_type(pos[0], pos[1], rob.CELL_TO_BE_FILLED)
                 d += 1
                 _d = d
             rob.move_right()
