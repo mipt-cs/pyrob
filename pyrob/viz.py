@@ -122,7 +122,7 @@ def render_maze(task_id):
     lines.append(((X_OFFSET + n*CELL_SIZE, Y_OFFSET - WALL_THICKNESS), (X_OFFSET + n*CELL_SIZE + WALL_THICKNESS, Y_OFFSET + m*CELL_SIZE + WALL_THICKNESS), WALL_COLOR))
 
     def rect(start, end, *args, **kwargs):
-        canvas.create_rectangle(*start, end[0] + 1, end[1] + 1, *args, **kwargs)
+        canvas.create_rectangle(start[0], start[1], end[0] + 1, end[1] + 1, *args, **kwargs)
 
     def make_label(x, y, text,):
         f = Frame(canvas, height=CELL_SIZE, width=CELL_SIZE)
