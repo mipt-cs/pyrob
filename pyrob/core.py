@@ -334,7 +334,7 @@ def is_parking_point():
 def mov(register, value):
     global registers
 
-    assert registers is not None
+    assert "registers" in globals(), "Dictionary `registers` is not defined because field is not set"
 
     registers[register] = value
 
